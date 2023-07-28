@@ -17,7 +17,8 @@ return new class extends Migration
             $table->unsignedInteger('material_id')->index();
             $table->integer('plan_qty')->default(0);
             $table->integer('actual_qty')->default(0);
-            $table->decimal('unit_price',10,2)->default(0);
+            $table->decimal('plan_unit_price',10,2)->default(0);
+            $table->decimal('actual_unit_price',10,2)->default(0);
             $table->timestamp('inbound_at')->index()->nullable();
             $table->timestamp('confirmed_at')->index()->nullable();
             $table->softDeletes();

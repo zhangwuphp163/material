@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('sku_id')->index();
             $table->unsignedInteger('material_id')->index();
-            $table->integer('qty')->default(1);
+            $table->integer('qty')->default(1)->index();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

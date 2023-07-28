@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedInteger('outbound_id')->index();
             $table->unsignedInteger('sku_id')->index();
-            $table->integer('order_qty')->default(0);
-            $table->integer('actual_qty')->default(0);
-            $table->decimal('unit_price')->default(0);
+            $table->integer('order_qty')->default(0)->index();
+            $table->integer('actual_qty')->default(0)->index();
+            $table->decimal('unit_price',10,2)->default(0);
+            $table->decimal('unit_material_costs',10,2)->default(0);
+            $table->decimal('actual_material_costs',10,2)->default(0);
             $table->timestamp('outbound_at')->nullable();
             $table->softDeletes();
             $table->timestamps();

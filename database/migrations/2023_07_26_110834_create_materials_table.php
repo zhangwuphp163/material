@@ -13,15 +13,14 @@ return new class extends Migration
     {
         Schema::create('materials', function (Blueprint $table) {
             $table->id();
-            $table->string('code',64)->index();
             $table->string('barcode',64)->index();
             $table->string('name',128)->default("");
-            $table->string('description',128)->default("");
+            $table->string('description')->default("");
             $table->decimal('price',10,2)->nullable()->default(0);
             $table->decimal('weight',10,3)->nullable()->default(0);
-            $table->decimal('length',10,2)->nullable()->default(0);
-            $table->decimal('width',10,2)->nullable()->default(0);
-            $table->decimal('height',10,2)->nullable()->default(0);
+            $table->integer('length')->nullable()->default(0);
+            $table->integer('width')->nullable()->default(0);
+            $table->integer('height')->nullable()->default(0);
             $table->string('style')->nullable()->default("");
             $table->string('color')->nullable()->default("");
             $table->softDeletes();

@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('skus', function (Blueprint $table) {
             $table->id();
             $table->string('barcode')->unique();
-            $table->string('name');
-            $table->string('description')->nullable()->default('');
+            $table->string('name')->index();
+            $table->string('description')->default('');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

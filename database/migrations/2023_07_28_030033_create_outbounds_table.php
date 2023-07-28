@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('outbound_number',64)->unique();
             $table->string('remark')->nullable();
-            $table->timestamp('ata_at')->nullable()->index();
-            $table->string('time_consuming')->index()->default(0);
+            $table->date('ata_at')->nullable()->index();
+            $table->string('time_consuming')->nullable()->index();
             $table->decimal('processing_costs',10,2)->nullable();
             $table->decimal('freight',10,2)->nullable();
             $table->timestamp('outbound_at')->nullable()->index();

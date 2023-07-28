@@ -18,13 +18,13 @@ class InboundController extends AdminController
         $table->column('id', 'ID')->sortable();
         $table->column('inbound_number', '入库编号')->sortable()->text();
         $table->column('remark', '备注')->text();
-        $table->column('created_at', '创建时间')->sortable()->text();
+        $table->column('created_at', '创建时间')->sortable()->datetime();
         $table->column('ata_at', '预期入库时间')->sortable()->text();
-        $table->column('inbound_at', '实际入库时间')->sortable();
-        $table->column('confirmed_at', '确认入库时间')->sortable();
+        $table->column('inbound_at', '入库时间')->sortable();
+        //$table->column('confirmed_at', '确认入库时间')->sortable();
         $table->filter(function(Table\Filter $filter){
             $filter->column(1/2,function(Table\Filter $filter){
-                $filter->between('created_at', '创建时间')->datetime(['format' => 'Y-m-d H:i:s']);
+                $filter->between('created_at', '创建时间')->datetime();
             });
             $filter->column(1/2,function(Table\Filter $filter){
                 $filter->like('name', '名称');
@@ -54,20 +54,18 @@ class InboundController extends AdminController
 
     public static function form(){
         $form = new Form(new Inbound());
-        $form->row(function(Form\Layout\Row $row) {
-            $row->column(6, function (Form\Layout\Column $column) {
-                $column->text('inbound_number')->rules(['required']);
-                $column->date('ata_at');
-                $column->text('remark');
-            });
-            $row->column(6, function (Form\Layout\Column $column) {
-                $column->hasMany('items','明细',function(Form\NestedForm $form){
-                    $form->row(function(Form\Layout\Row $row){
-                        $row->hidden('inbound_id')->setDisplay(false);
-                        $row->select('material_id','物料名称')->rules(['required'])->options(Material::pluck('name','id')->toArray());
-                        $row->number('plan_qty');
-                        $row->decimal('unit_price');
-                    });
+        $form->tab('入库信息',function($form){
+            $form->text('inbound_number')->rules(['required']);
+            $form->text('remark');
+            $form->date('ata_at');
+        });
+        $form->tab('入库明细',function($form){
+            $form->hasMany('items','明细',function(Form\NestedForm $form){
+                $form->hidden('inbound_id');
+                $form->row(function(Form\Layout\Row $row){
+                    $row->select('material_id','物料名称')->rules(['required'])->options(Material::pluck('name','id')->toArray());
+                    $row->number('plan_qty');
+                    $row->decimal('unit_price');
                 });
             });
         });

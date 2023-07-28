@@ -10,7 +10,6 @@ use Encore\Admin\Form;
 use Encore\Admin\Http\Controllers\AdminController;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Table;
-use Illuminate\Http\Request;
 
 class MaterialController extends AdminController
 {
@@ -57,7 +56,6 @@ class MaterialController extends AdminController
             $content
               ->title($this->title())
               ->description($this->description['create'] ?? trans('admin.create'));
-              //->body(new MaterialForm());
 
         return $this->renderModalForm($this->form()->create(), $content);
     }
@@ -67,22 +65,20 @@ class MaterialController extends AdminController
      */
     public function form(){
         $form = new Form(new Material());
-        $form->row(function(Form\Layout\Row $row){
-            $row->column(6,function(Form\Layout\Column $column){
-                $column->text('name')->rules('required');
-                $column->text('code')->rules('required');
-                $column->text('barcode')->rules('required');
-                $column->text('description')->rules('required');
-                $column->text('style');
-                $column->text('color');
-            });
-            $row->column(6,function(Form\Layout\Column $column){
-                $column->text('length');
-                $column->text('width');
-                $column->text('height');
-                $column->text('weight');
-                $column->text('price');
-            });
+        $form->tab("基本信息",function($form){
+            $form->text('name','名称')->rules('required');
+            $form->text('barcode','条码')->rules('required');
+            $form->text('description','描述')->rules('required');
+        });
+        $form->tab("其他信息",function($form){
+            /** @var \Encore\Admin\Widgets\Form $form */
+            $form->text('style','格式');
+            $form->text('color','颜色');
+            $form->decimal('length','长(cm)');
+            $form->decimal('width','宽(cm)');
+            $form->decimal('height','高(cm)');
+            $form->decimal('weight','重量(g)');
+            $form->decimal('price','价格');
         });
         /** @var Form $form */
         return $form;

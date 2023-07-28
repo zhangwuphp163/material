@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
+use Encore\Admin\Traits\DefaultDatetimeFormat;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Material extends Model
 {
     use HasFactory;
+    use DefaultDatetimeFormat;
+    use SoftDeletes;
     protected $table = "materials";
     protected $fillable = [
-        'code',
         'barcode',
-        'client_id',
         'name',
         'description',
         'style',
