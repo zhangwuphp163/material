@@ -2,12 +2,16 @@
 
 namespace App\Admin\Controllers;
 
+use App\Admin\Actions\Post\Inbound\Confirm;
 use App\Http\Controllers\Controller;
 use App\Models\Inbound;
+use App\Models\InboundItem;
 use App\Models\Material;
+use Encore\Admin\Admin;
 use Encore\Admin\Form;
 use Encore\Admin\Http\Controllers\AdminController;
 use Encore\Admin\Layout\Content;
+use Encore\Admin\Show;
 use Encore\Admin\Table;
 
 class InboundController extends AdminController
@@ -16,12 +20,35 @@ class InboundController extends AdminController
     public static function table(){
         $table = new Table(new Inbound());
         $table->column('id', 'ID')->sortable();
-        $table->column('inbound_number', '入库编号')->sortable()->text();
+            //->expand(function($model){
+            /** @var Inbound $model */
+            //$items = $model->items()->get(['plan_qty'])->toArray();
+            //return new \Encore\Admin\Widgets\Table(['Plan QTY'],$items);
+        //});
+        $table->column('inbound_number', '入库编号')->sortable()->modal("明细",function($model){
+            /** @var Inbound $model */
+            $items = $model->items()->get();
+            $data = [];
+            foreach($items as $item){
+                $data[] = [
+                    $item->material->name,
+                    $item->plan_qty,
+                    $item->actual_qty,
+                    $item->plan_unit_price,
+                    $item->actual_unit_price
+
+                ];
+            }
+            return new \Encore\Admin\Widgets\Table(['物料名称','预算数量','实际数量','预算价格','实际价格'],$data);
+        });
+        $table->column('status', '状态')->sortable()->display(function($status){
+            return $status == 0?'待定':'入库完成';
+        });
         $table->column('remark', '备注')->text();
-        $table->column('created_at', '创建时间')->sortable()->datetime();
-        $table->column('ata_at', '预期入库时间')->sortable()->text();
+        $table->column('ata_at', '预期入库日期')->sortable()->date();
         $table->column('inbound_at', '入库时间')->sortable();
         //$table->column('confirmed_at', '确认入库时间')->sortable();
+        $table->column('created_at', '创建时间')->sortable();
         $table->filter(function(Table\Filter $filter){
             $filter->column(1/2,function(Table\Filter $filter){
                 $filter->between('created_at', '创建时间')->datetime();
@@ -31,11 +58,17 @@ class InboundController extends AdminController
                 $filter->between('inbound_at', '入库时间')->datetime(['format' => 'Y-m-d H:i:s']);
             });
         });
+
+        $table->actions(function($actions){
+            $id = $actions->getKey();
+            //$actions->append("<a class='btn btn-sm btn-danger' href='/admin/inbound/items/".$id."'><i class='fa fa-info-circle'></i>详情</a>");
+            //$actions->add("<a class='btn btn-sm btn-danger' href='/admin/inbound/items/".$id."'><i class='fa fa-info-circle'></i>详情</a>");
+        });
+
         return $table;
     }
     public function index(Content $content)
     {
-
         $table = self::table();
         return $content
             ->title('入库管理')
@@ -65,7 +98,7 @@ class InboundController extends AdminController
                 $form->row(function(Form\Layout\Row $row){
                     $row->select('material_id','物料名称')->rules(['required'])->options(Material::pluck('name','id')->toArray());
                     $row->number('plan_qty');
-                    $row->decimal('unit_price');
+                    $row->decimal('plan_unit_price');
                 });
             });
         });
@@ -79,6 +112,40 @@ class InboundController extends AdminController
             //$tools->add('<a class="btn btn-sm btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;delete</a>');
         });
         return $form;
+    }
+
+    public function detail($id){
+        $show = new Show(Inbound::findOrFail($id));
+        return $show;
+    }
+
+    public function items(int $inbound_id,Content $content)
+    {
+        $table = new Table(new InboundItem());
+        $table->model()->where('inbound_id',$inbound_id);
+        $table->column('id', 'ID');
+        $table->column('material_id', 'Material')->display(function($material_id){
+            $material = Material::where('id',$material_id)->first();
+            return $material->name;
+        });
+        $table->column('plan_qty', '预算数量')->sortable();
+        $table->column('plan_unit_price', '预算单价')->sortable()->decimal();
+        $table->column('actual_qty', '实际数量')->sortable()->integer();
+        $table->column('actual_price', '实际单价')->sortable()->integer();
+        $table->actions(function ($actions) {
+            $actions->disableEdit();
+            $actions->disableView();
+        });
+        $table->disableCreateButton();
+        $table->disableFilter();
+        $table->disableExport();
+        $table->disableRowSelector();
+        $table->tools(function (Table\Tools $tools) {
+            //$tools->append(new Confirm());
+        });
+        return $content
+            ->title('详情')
+            ->body($table);
     }
 
 }

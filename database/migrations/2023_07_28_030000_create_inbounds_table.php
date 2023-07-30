@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('inbounds', function (Blueprint $table) {
             $table->id();
             $table->string('inbound_number',64)->unique();
+            $table->tinyInteger('status')->index()->default(0);
             $table->string('remark')->nullable();
             $table->date('ata_at')->index()->nullable();
             $table->timestamp('inbound_at')->index()->nullable();

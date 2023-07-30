@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('outbounds', function (Blueprint $table) {
             $table->id();
             $table->string('outbound_number',64)->unique();
+            $table->tinyInteger('status')->index()->default(0);
             $table->string('remark')->nullable();
             $table->date('ata_at')->nullable()->index();
             $table->string('time_consuming')->nullable()->index();

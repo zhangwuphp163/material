@@ -17,14 +17,26 @@ class SkuController extends AdminController
     protected $title = 'SKU';
     public static function table(){
         $table = new Table(new Sku());
-        $table->column('id', 'ID')->sortable()->searchable();
-        $table->column('barcode', '条码')->sortable()->text();
+        $table->column('id', 'ID')->sortable();
+        $table->column('barcode', '条码')->sortable()->modal("明细",function($model){
+            /** @var SkuItem $model */
+            $items = $model->items()->get();
+            $data = [];
+            foreach($items as $item){
+                $data[] = [
+                    $item->material->name,
+                    $item->qty
+
+                ];
+            }
+            return new \Encore\Admin\Widgets\Table(['物料名称','数量'],$data);
+        });;
         $table->column('name', '名称')->sortable()->text();
         $table->column('description', '描述')->text();
         $table->column('created_at', '创建时间')->datetime();
         $table->filter(function(Table\Filter $filter){
             $filter->column(1/2,function(Table\Filter $filter){
-                $filter->like('barcode', '代码');
+                $filter->like('barcode', '条码');
             });
             $filter->column(1/2,function(Table\Filter $filter){
                 $filter->like('name', '名称');
@@ -61,8 +73,8 @@ class SkuController extends AdminController
         $form->text('name')->rules(['required']);
         $form->text('description')->rules(['required']);
         $form->hasMany('items','明细',function(Form\NestedForm $form){
+            $form->hidden('sku_id');
             $form->row(function(Form\Layout\Row $row){
-                $row->hidden('sku_id')->setDisplay(false);
                 $row->select('material_id','物料名称')->rules(['required'])->options(Material::pluck('name','id')->toArray());
                 $row->number('qty');
             });

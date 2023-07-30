@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Client;
 use App\Models\Material;
 use App\Models\Outbound;
+use App\Models\OutboundItem;
 use App\Models\Sku;
 use Encore\Admin\Form;
 use Encore\Admin\Http\Controllers\AdminController;
@@ -19,14 +20,32 @@ class OutboundController extends AdminController
     public static function table(){
         $table = new Table(new Outbound());
         $table->column('id', 'ID')->sortable();
-        $table->column('outbound_number', '出库编号')->sortable()->text();
+        $table->column('outbound_number', '出库编号')->sortable()->modal('明细',function($model){
+            /** @var OutboundItem $model */
+            $items = $model->items()->get();
+            $data = [];
+            foreach($items as $item){
+                $data[] = [
+                    $item->sku->name,
+                    $item->sku->barcode,
+                    $item->order_qty,
+                    $item->actual_qty,
+                    $item->unit_price,
+                    $item->unit_material_costs,
+                ];
+            }
+            return new \Encore\Admin\Widgets\Table(['商品名称','商品条码','订单数量','实际数量','商品单价','物料单价成本'],$data);
+        });
+        $table->column('status', '状态')->sortable()->display(function($status){
+            return $status == 0?'待定':'出库完成';
+        });
         $table->column('remark', '备注')->text();
         $table->column('created_at', '创建时间')->sortable();
-        $table->column('ata_at', '计划出库时间')->sortable()->text();
+        $table->column('ata_at', '计划出库日期')->sortable()->text();
         $table->column('time_consuming', '生产用时')->sortable()->text();
         $table->column('processing_costs', '加工成本（人工,加工费等）')->sortable()->text();
         $table->column('freight', '运费')->sortable()->text();
-        $table->column('outbound_at', '出库库时间')->sortable();
+        $table->column('outbound_at', '出库时间')->sortable();
         $table->filter(function(Table\Filter $filter){
             $filter->column(1/2,function(Table\Filter $filter){
                 $filter->between('created_at', '创建时间')->datetime(['format' => 'Y-m-d H:i:s']);

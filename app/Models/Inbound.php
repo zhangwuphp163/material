@@ -6,12 +6,14 @@ use Encore\Admin\Traits\DefaultDatetimeFormat;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OwenIt\Auditing\Contracts\Auditable;
 
-class Inbound extends Model
+class Inbound extends Model implements Auditable
 {
     use HasFactory;
     use SoftDeletes;
     use DefaultDatetimeFormat;
+    use \OwenIt\Auditing\Auditable;
 
     protected $dateFormat = 'Y-m-d H:i:s';
     protected $table = 'inbounds';
@@ -22,9 +24,6 @@ class Inbound extends Model
         'confirmed_at',
         'remark'
     ];
-
-
-
 
     public function items(){
         return $this->hasMany(InboundItem::class);

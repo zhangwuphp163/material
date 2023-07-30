@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('actual_qty')->default(0)->index();
             $table->decimal('unit_price',10,2)->default(0);
             $table->decimal('unit_material_costs',10,2)->default(0);
-            $table->decimal('actual_material_costs',10,2)->default(0);
             $table->timestamp('outbound_at')->nullable();
             $table->softDeletes();
             $table->timestamps();
