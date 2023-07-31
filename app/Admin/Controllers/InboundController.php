@@ -2,17 +2,20 @@
 
 namespace App\Admin\Controllers;
 
-use App\Admin\Actions\Post\Inbound\Confirm;
+use App\Admin\Actions\Post\Href;
+use App\Admin\Actions\Post\InboundConfirmPost;
 use App\Http\Controllers\Controller;
 use App\Models\Inbound;
 use App\Models\InboundItem;
-use App\Models\Material;
-use Encore\Admin\Admin;
+use App\Models\Material;;
 use Encore\Admin\Form;
 use Encore\Admin\Http\Controllers\AdminController;
 use Encore\Admin\Layout\Content;
 use Encore\Admin\Show;
 use Encore\Admin\Table;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
 
 class InboundController extends AdminController
 {
@@ -60,9 +63,10 @@ class InboundController extends AdminController
         });
 
         $table->actions(function($actions){
-            $id = $actions->getKey();
-            //$actions->append("<a class='btn btn-sm btn-danger' href='/admin/inbound/items/".$id."'><i class='fa fa-info-circle'></i>详情</a>");
-            //$actions->add("<a class='btn btn-sm btn-danger' href='/admin/inbound/items/".$id."'><i class='fa fa-info-circle'></i>详情</a>");
+            $row = $actions->row;
+            if($row->status == 0){
+                $actions->add(new Href("/admin/inbound/items/"));
+            }
         });
 
         return $table;
@@ -72,8 +76,6 @@ class InboundController extends AdminController
         $table = self::table();
         return $content
             ->title('入库管理')
-            //->description('')
-            //->row("客户管理")
             ->body($table);
     }
 
@@ -131,7 +133,7 @@ class InboundController extends AdminController
         $table->column('plan_qty', '预算数量')->sortable();
         $table->column('plan_unit_price', '预算单价')->sortable()->decimal();
         $table->column('actual_qty', '实际数量')->sortable()->integer();
-        $table->column('actual_price', '实际单价')->sortable()->integer();
+        $table->column('actual_unit_price', '实际单价')->sortable()->integer();
         $table->actions(function ($actions) {
             $actions->disableEdit();
             $actions->disableView();
@@ -140,12 +142,33 @@ class InboundController extends AdminController
         $table->disableFilter();
         $table->disableExport();
         $table->disableRowSelector();
-        $table->tools(function (Table\Tools $tools) {
-            //$tools->append(new Confirm());
+        $table->tools(function (Table\Tools $tools) use ($inbound_id){
+            $class = new InboundConfirmPost($inbound_id);
+            $class->inbound_id = $inbound_id;
+            //$class->attribute("id",strval($inbound_id));
+            $tools->append($class);
         });
         return $content
             ->title('详情')
             ->body($table);
+    }
+
+    public function itemUpdate($inbound_id,$item_id,Request $request){
+        /** @var InboundItem $inboundItem */
+        $inboundItem = InboundItem::where('id',$item_id)->first();
+        $fillables = collect($inboundItem->getFillable());
+        foreach ($fillables As $fillable) {
+            if ($request->exists($fillable)) {
+                $inboundItem->$fillable = $request->get($fillable);
+            }
+        }
+        $inboundItem->save();
+        return [
+            'status' => true,
+            'message' => '更新成功',
+            'display' => []
+        ];
+
     }
 
 }

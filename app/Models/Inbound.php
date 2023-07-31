@@ -8,6 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use OwenIt\Auditing\Contracts\Auditable;
 
+/**
+ * @property int status
+ * @property mixed inbound_at
+ * @property mixed confirmed_at
+ * @property  InboundItem items
+ */
 class Inbound extends Model implements Auditable
 {
     use HasFactory;

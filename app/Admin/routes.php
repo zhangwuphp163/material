@@ -16,6 +16,8 @@ Route::group([
     $router->resource('sku','SkuController');
     $router->resource('inbound','InboundController');
     $router->resource('outbound','OutboundController');
+    $router->resource('inventory','InventoryController');
     $router->get('inbound/items/{inbound_id}','InboundController@items')->name('inbound.items');
+    $router->put('inbound/items/{inbound_id}/{item_id}','InboundController@itemUpdate')->name('inbound.items');
 
 });
