@@ -14,8 +14,7 @@ class HomeController extends Controller
     {
         return $content
             ->title('Dashboard')
-            ->description('Description...')
-            ->row(Dashboard::title())
+            ->view('admin.dashboard.chart',['title' => '入库单']);
             /*->row(function (Row $row) {
 
                 $row->column(4, function (Column $column) {
@@ -29,6 +28,6 @@ class HomeController extends Controller
                 $row->column(4, function (Column $column) {
                     $column->append(Dashboard::dependencies());
                 });
-            })*/;
+            });*/
     }
 }

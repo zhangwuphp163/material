@@ -46,4 +46,8 @@ class Inventory extends Model implements Auditable
     public function outboundItem(){
         return $this->belongsTo(OutboundItem::class);
     }
+
+    public function allocate(){
+
+    }
 }

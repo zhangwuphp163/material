@@ -97,35 +97,10 @@ class OutboundController extends AdminController
 
             });
         });
-        /*$form->row(function(Form\Layout\Row $row) {
-            $row->column(6, function (Form\Layout\Column $column) {
-                $column->text('outbound_number')->rules(['required']);
-                $column->date('ata_at');
-                $column->text('remark');
-                $column->decimal('time_consuming','生产用时');
-                $column->decimal('processing_costs','加工成本（人工，加工费等）');
-                $column->decimal('freight','运费');
-            });
-            $row->column(6, function (Form\Layout\Column $column) {
-                $column->hasMany('items','明细',function(Form\NestedForm $form){
-                    $form->row(function(Form\Layout\Row $row){
-                        $row->number('outbound_id')->setDisplay(false);
-                        $row->select('sku_id','商品名称')->rules(['required'])->options(Sku::pluck('name','id')->toArray());
-                        $row->number('order_qty',"数量");
-                        $row->decimal('unit_price',"单价");
-                    });
-                });
-            });
-        });*/
-
-
         $form->tools(function (Form\Tools $tools) {
             // 去掉`删除`按钮
             $tools->disableDelete();
-
-
-            // 添加一个按钮, 参数可以是字符串, 或者实现了Renderable或Htmlable接口的对象实例
-            //$tools->add('<a class="btn btn-sm btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;delete</a>');
+            $tools->append('<a class="btn btn-sm btn-danger"><i class="fa fa-trash"></i>&nbsp;&nbsp;delete</a>');
         });
         return $form;
     }
