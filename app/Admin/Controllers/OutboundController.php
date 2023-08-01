@@ -12,6 +12,7 @@ use App\Models\Sku;
 use Encore\Admin\Form;
 use Encore\Admin\Http\Controllers\AdminController;
 use Encore\Admin\Layout\Content;
+use Encore\Admin\Show;
 use Encore\Admin\Table;
 
 class OutboundController extends AdminController
@@ -59,14 +60,15 @@ class OutboundController extends AdminController
     }
     public function index(Content $content)
     {
-
         $table = self::table();
         return $content
             ->title('出库管理')
-            //->description('')
             ->body($table);
     }
-
+    public function detail($id){
+        $show = new Show(Outbound::findOrFail($id));
+        return $show;
+    }
     public function create(Content $content)
     {
         $content

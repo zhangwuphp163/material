@@ -11,6 +11,7 @@ use App\Models\SkuItem;
 use Encore\Admin\Form;
 use Encore\Admin\Http\Controllers\AdminController;
 use Encore\Admin\Layout\Content;
+use Encore\Admin\Show;
 use Encore\Admin\Table;
 
 class InventoryController extends AdminController
@@ -29,6 +30,10 @@ class InventoryController extends AdminController
             $actions->disableDelete();
         });
         return $table;
+    }
+    public function detail($id){
+        $show = new Show(Inventory::findOrFail($id));
+        return $show;
     }
     public function index(Content $content)
     {

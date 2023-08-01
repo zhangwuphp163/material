@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('materials', function (Blueprint $table) {
             $table->id();
-            $table->string('barcode',64)->index();
+            $table->string('barcode',64)->unique();
             $table->string('name',128)->default("");
             $table->string('description')->default("");
             $table->decimal('price',10,2)->nullable()->default(0);

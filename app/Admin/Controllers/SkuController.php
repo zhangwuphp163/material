@@ -10,6 +10,7 @@ use App\Models\SkuItem;
 use Encore\Admin\Form;
 use Encore\Admin\Http\Controllers\AdminController;
 use Encore\Admin\Layout\Content;
+use Encore\Admin\Show;
 use Encore\Admin\Table;
 
 class SkuController extends AdminController
@@ -57,6 +58,11 @@ class SkuController extends AdminController
             //->description('')
             //->row("商品管理")
             ->body($table);
+    }
+
+    public function detail($id){
+        $show = new Show(Sku::findOrFail($id));
+        return $show;
     }
 
     public function create(Content $content)

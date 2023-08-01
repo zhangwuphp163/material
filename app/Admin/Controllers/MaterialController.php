@@ -9,6 +9,7 @@ use App\Models\Material;
 use Encore\Admin\Form;
 use Encore\Admin\Http\Controllers\AdminController;
 use Encore\Admin\Layout\Content;
+use Encore\Admin\Show;
 use Encore\Admin\Table;
 
 class MaterialController extends AdminController
@@ -38,6 +39,11 @@ class MaterialController extends AdminController
             });
 
         });
+        $table->quickCreate(function (Table\Tools\QuickCreate $create) {
+            $create->text('name', '名称');
+            $create->text('barcode', '条码');
+            $create->text('description', '描述');
+        });
         return $table;
     }
     public function index(Content $content)
@@ -49,6 +55,11 @@ class MaterialController extends AdminController
             //->description('')
             ->row("物料管理")
             ->body($table);
+    }
+
+    public function detail($id){
+        $show = new Show(Material::findOrFail($id));
+        return $show;
     }
 
     public function create(Content $content)
